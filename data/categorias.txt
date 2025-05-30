@@ -1,3 +1,5 @@
 1|Alimento
 2|Limpeza
 3|Panificação
+4|Ferramentas
+5|Bebidas

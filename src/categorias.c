@@ -1,62 +1,90 @@
-
 #include "../include/categorias.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void cadastrarCategoria(Categoria** categorias, int* total) {
-    printf("\n--- Cadastro de Categoria ---\n");
+Categoria* pegarUltimaCategoria(Categoria* lista) {
+    if (!lista) return NULL;
 
-    // Realoca espaço para nova categoria
-    Categoria* nova = realloc(*categorias, sizeof(Categoria) * (*total + 1));
-    if (!nova) {
-        printf("Erro ao alocar memória para a categoria.\n");
-        return;
-    }
-    *categorias = nova;
+    while (lista->prox != NULL)
+        lista = lista->prox;
 
-    Categoria* c = &(*categorias)[*total];
-
-    // ID sequencial
-    c->id = (*total == 0) ? 1 : (*categorias)[*total - 1].id + 1;
-
-    getchar(); // limpa buffer do teclado
-
-    printf("Descrição: ");
-    fgets(c->descricao, sizeof(c->descricao), stdin);
-    c->descricao[strcspn(c->descricao, "\n")] = 0;
-
-    (*total)++;
-    printf("Categoria cadastrada com sucesso! ID: %d\n", c->id);
+    return lista;
 }
 
-void listarCategorias(Categoria* categorias, int total) {
-    if (total == 0) {
+Categoria* pegarCategoria(Categoria* lista, int id) {
+    while (lista != NULL) {
+        if (lista->id == id) return lista;
+        lista = lista->prox;
+    }
+    return NULL;
+}
+
+void cadastrarCategoria(Categoria** categorias) {
+    Categoria* nova = malloc(sizeof(Categoria));
+    if (!nova) {
+        printf("Erro ao alocar memória para a nova categoria.\n");
+        return;
+    }
+
+    nova->prox = NULL;
+
+    Categoria* ultima = pegarUltimaCategoria(*categorias);
+    nova->id = (ultima == NULL) ? 1 : ultima->id + 1;
+
+    getchar(); // limpar buffer
+
+    printf("Descrição: ");
+    fgets(nova->descricao, sizeof(nova->descricao), stdin);
+    nova->descricao[strcspn(nova->descricao, "\n")] = 0;
+
+    if (*categorias == NULL) {
+        *categorias = nova;
+    } else {
+        ultima->prox = nova;
+    }
+
+    printf("Categoria cadastrada com sucesso! ID: %d\n", nova->id);
+}
+
+void listarCategorias(Categoria* categorias) {
+    if (!categorias) {
         printf("Nenhuma categoria cadastrada.\n");
         return;
     }
 
     printf("\n===== Lista de Categorias =====\n");
-    for (int i = 0; i < total; i++) {
-        printf("ID: %d\n", categorias[i].id);
-        printf("Descrição: %s\n", categorias[i].descricao);
+    Categoria* atual = categorias;
+    while (atual) {
+        printf("ID: %d\n", atual->id);
+        printf("Descrição: %s\n", atual->descricao);
         printf("-----------------------------\n");
+        atual = atual->prox;
     }
 }
 
-void salvarCategorias(const char* nomeArquivo, Categoria* categorias, int total) {
+void salvarCategorias(const char* nomeArquivo, Categoria* categorias) {
     FILE* f = fopen(nomeArquivo, "w");
     if (!f) {
-        printf("Erro ao salvar categorias no arquivo '%s'. Verifique se a pasta existe e se há permissão.\n", nomeArquivo);
+        printf("Erro ao salvar categorias no arquivo '%s'. Verifique permissões.\n", nomeArquivo);
         return;
     }
 
-    for (int i = 0; i < total; i++) {
-        fprintf(f, "%d|%s\n",
-                categorias[i].id,
-                categorias[i].descricao);
+    Categoria* atual = categorias;
+    while (atual) {
+        fprintf(f, "%d|%s\n", atual->id, atual->descricao);
+        atual = atual->prox;
     }
 
     fclose(f);
-    printf("Categorias salvas com sucesso (%d registradas).\n", total);
+    printf("Categorias salvas com sucesso.\n");
+}
+
+void liberarCategorias(Categoria* lista) {
+    Categoria* atual;
+    while (lista != NULL) {
+        atual = lista;
+        lista = lista->prox;
+        free(atual);
+    }
 }
