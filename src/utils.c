@@ -30,4 +30,3 @@ FILE* abrirOuCriarArquivoLeitura(const char* nomeArquivo) {
     }
     return f;
 }
-

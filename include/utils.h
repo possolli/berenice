@@ -9,5 +9,6 @@ int confirmar(const char* mensagem);
 
 // ✅ Nova função
 FILE* abrirOuCriarArquivoLeitura(const char* nomeArquivo);
+void* pegarItem(void* lista, int id);
 
 #endif
