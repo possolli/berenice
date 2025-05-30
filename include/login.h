@@ -3,7 +3,7 @@
 
 #include "usuarios.h"
 
-Usuario* login(Usuario* usuarios, int totalUsuarios);
+Usuario* login(Usuario* usuarios);
 void lerSenhaOculta(char *senha, int max);
 
 #endif
