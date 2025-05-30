@@ -1,13 +1,3 @@
-# ✅ Checklist do Projeto Berê 4 – Profissionalização
-
-## 📆 Cronograma e Entregas
-- [ ] Desenvolvimento: 04/06/24 a 28/06/24
-- [ ] Entrega final na plataforma até 28/06/24 às 23h59
-- [ ] Apresentações: 01/07 (segunda) e 03/07 (quarta)
-- [ ] Líder apresenta o grupo; todos devem saber explicar o código
-
----
-
 ## 🔍 Levantamento de Requisitos
 
 ### Necessidade 1 – Sistema em C (Terminal)
