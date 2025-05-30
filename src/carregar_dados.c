@@ -1,6 +1,49 @@
 #include "../include/carregar_dados.h"
 #include "../include/utils.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+Usuario* carregarUsuarios(const char* nomeArquivo) {
+    FILE* f = fopen(nomeArquivo, "r");
+    if (!f) {
+        f = fopen(nomeArquivo, "w");
+        if (!f) return NULL;
+        fclose(f);
+        f = fopen(nomeArquivo, "r");
+        if (!f) return NULL;
+    }
+
+    Usuario* inicio = NULL;
+    Usuario* fim = NULL;
+
+    char nome[50], login[13], senha[9];
+    int tipo;
+
+    while (fscanf(f, "%49[^|]|%12[^|]|%8[^|]|%d\n", nome, login, senha, &tipo) == 4) {
+        Usuario* novo = malloc(sizeof(Usuario));
+        if (!novo) continue;
+
+        strcpy(novo->nome, nome);
+        strcpy(novo->login, login);
+        strcpy(novo->senha, senha);
+        novo->tipo = tipo;
+        novo->prox = NULL;
+
+        if (inicio == NULL) {
+            inicio = novo;
+            fim = novo;
+        } else {
+            fim->prox = novo;
+            fim = novo;
+        }
+    }
+
+    fclose(f);
+    return inicio;
+}
+
 // Carrega clientes
 Cliente* carregarClientes(const char* nomeArquivo) {
     FILE* f = fopen(nomeArquivo, "r");
@@ -40,54 +83,78 @@ Cliente* carregarClientes(const char* nomeArquivo) {
     return lista;
 }
 
-// Carrega produtos
-Produto* carregarProdutos(const char* nomeArquivo, int* total) {
+Produto* carregarProdutos(const char* nomeArquivo) {
     FILE* f = abrirOuCriarArquivoLeitura(nomeArquivo);
     if (!f) return NULL;
-    
-    int capacidade = BUFFER_INICIAL;
-    Produto* lista = malloc(sizeof(Produto) * capacidade);
-    *total = 0;
-    
-   while (fscanf(f, "%d|%49[^|]|%d|%d|%29[^|]|%f|%f\n",
-              &lista[*total].id,
-              lista[*total].descricao,
-              &lista[*total].estoque,
-              &lista[*total].estoque_minimo,
-              lista[*total].categoria,
-              &lista[*total].preco_compra,
-              &lista[*total].preco_venda) == 7) {
-        (*total)++;
 
-        if (*total >= capacidade) {
-            capacidade *= 2;
-            lista = realloc(lista, sizeof(Produto) * capacidade);
+    Produto* inicio = NULL;
+    Produto* fim = NULL;
+
+    while (1) {
+        Produto* novo = malloc(sizeof(Produto));
+        if (!novo) break;
+
+        int lidos = fscanf(f, "%d|%49[^|]|%d|%d|%29[^|]|%f|%f\n",
+                           &novo->id,
+                           novo->descricao,
+                           &novo->estoque,
+                           &novo->estoque_minimo,
+                           novo->categoria,
+                           &novo->preco_compra,
+                           &novo->preco_venda);
+        if (lidos != 7) {
+            free(novo);
+            break;
+        }
+
+        novo->prox = NULL;
+
+        if (inicio == NULL) {
+            inicio = novo;
+            fim = novo;
+        } else {
+            fim->prox = novo;
+            fim = novo;
         }
     }
 
     fclose(f);
-    return lista;
+    return inicio;
 }
 
-// Carrega categorias
-Categoria* carregarCategorias(const char* nomeArquivo, int* total) {
-    FILE* f = abrirOuCriarArquivoLeitura(nomeArquivo);
-    if (!f) return NULL;
+Categoria* carregarCategorias(const char* nomeArquivo) {
+    FILE* f = fopen(nomeArquivo, "r");
+    if (!f) {
+        f = fopen(nomeArquivo, "w");
+        if (!f) return NULL;
+        fclose(f);
+        f = fopen(nomeArquivo, "r");
+        if (!f) return NULL;
+    }
 
-    int capacidade = BUFFER_INICIAL;
-    Categoria* lista = malloc(sizeof(Categoria) * capacidade);
-    *total = 0;
+    Categoria *inicio = NULL, *fim = NULL;
+    int id;
+    char descricao[50];
 
-    while (fscanf(f, "%d|%50[^\n]\n", &lista[*total].id, lista[*total].descricao) == 2) {
-        (*total)++;
-        if (*total >= capacidade) {
-            capacidade *= 2;
-            lista = realloc(lista, sizeof(Categoria) * capacidade);
+    while (fscanf(f, "%d|%49[^\n]\n", &id, descricao) == 2) {
+        Categoria* nova = malloc(sizeof(Categoria));
+        if (!nova) continue;
+
+        nova->id = id;
+        strcpy(nova->descricao, descricao);
+        nova->prox = NULL;
+
+        if (!inicio) {
+            inicio = nova;
+            fim = nova;
+        } else {
+            fim->prox = nova;
+            fim = nova;
         }
     }
 
     fclose(f);
-    return lista;
+    return inicio;
 }
 
 // Carrega vendas
