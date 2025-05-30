@@ -5,99 +5,102 @@
 
 #define BUFFER_INICIAL 10
 
-void cadastrarUsuario(Usuario** usuarios, int* total) {
-    Usuario novo;
-    printf("\n--- Cadastro de Usuário ---\n");
-
-    printf("Nome do usuário: ");
-    scanf(" %[^\n]", novo.nome); // Lê até a nova linha para permitir nomes com espaços
-
-    while (1) {
-        printf("Login (8 a 12 caracteres): ");
-        fscanf(stdin, "%12s", novo.login);
-        int len = strlen(novo.login);
-        if (len >= 8 && len <= 12) break;
-        printf("Login inválido. Tente novamente.\n");
-    }
-    getchar(); // limpa o \n que ficou no buffer
-
-    while (1) {
-        printf("Senha (6 a 8 caracteres): ");
-        fscanf(stdin, "%8s", novo.senha);
-        int len = strlen(novo.senha);
-        if (len >= 6 && len <= 8) break;
-        printf("Senha inválida. Tente novamente.\n");
-    }
-    getchar(); // limpa o \n que ficou no buffer
-
-    while (1) {
-        printf("Tipo de usuário (1 - Administrador | 2 - Usuário): ");
-        fscanf(stdin, "%d", &novo.tipo);
-        if (novo.tipo == 1 || novo.tipo == 2) break;
-        printf("Tipo inválido. Digite 1 para Administrador ou 2 para Usuário.\n");
-    }
-
-    Usuario* temp = realloc(*usuarios, sizeof(Usuario) * (*total + 1));
-    if (!temp) {
+void cadastrarUsuario(Usuario** usuarios) {
+    Usuario* novo = malloc(sizeof(Usuario));
+    if (!novo) {
         printf("Erro ao alocar memória para novo usuário.\n");
         return;
     }
 
-    *usuarios = temp;
-    (*usuarios)[*total] = novo;
-    (*total)++;
+    printf("\n--- Cadastro de Usuário ---\n");
+
+    printf("Nome do usuário: ");
+    scanf(" %[^\n]", novo->nome);
+
+    while (1) {
+        printf("Login (8 a 12 caracteres): ");
+        scanf("%12s", novo->login);
+        int len = strlen(novo->login);
+        if (len >= 8 && len <= 12) break;
+        printf("Login inválido. Tente novamente.\n");
+    }
+
+    while (1) {
+        printf("Senha (6 a 8 caracteres): ");
+        scanf("%8s", novo->senha);
+        int len = strlen(novo->senha);
+        if (len >= 6 && len <= 8) break;
+        printf("Senha inválida. Tente novamente.\n");
+    }
+
+    getchar(); // Limpa o buffer após a leitura da senha
+
+    while (1) {
+        printf("Tipo de usuário (1 - Administrador | 2 - Usuário): ");
+        scanf("%d", &novo->tipo);
+        if (novo->tipo == 1 || novo->tipo == 2) break;
+        printf("Tipo inválido. Digite 1 para Administrador ou 2 para Usuário.\n");
+    }
+
+    getchar(); // Limpa o buffer após a leitura do tipo
+
+    novo->prox = NULL;
+    if (*usuarios == NULL) {
+        *usuarios = novo;
+    } else {
+        Usuario* atual = *usuarios;
+        while (atual->prox != NULL) {
+            atual = atual->prox;
+        }
+        atual->prox = novo;
+    }
+
     printf("Usuário cadastrado com sucesso.\n");
 }
 
-void listarUsuarios(Usuario* usuarios, int total) {
+Usuario* pegarUsuario(Usuario* usuarios, char login[12]) {
+    Usuario* atual = usuarios;
+    while (atual != NULL) {
+        if (strcmp(atual->login, login) == 0) {
+            return atual;
+        }
+        atual = atual->prox;
+    }
+    return NULL;
+}
+
+void listarUsuarios(Usuario* usuarios) {
     printf("\n--- Lista de Usuários ---\n");
-    for (int i = 0; i < total; i++) {
-        printf("Nome: %s | Login: %s | Tipo: %d\n", usuarios[i].nome, usuarios[i].login, usuarios[i].tipo);
+    Usuario* atual = usuarios;
+    while (atual != NULL) {
+        printf("Nome: %s | Login: %s | Tipo: %d\n", atual->nome, atual->login, atual->tipo);
+        atual = atual->prox;
     }
 }
 
-int salvarUsuarios(const char* nomeArquivo, Usuario* usuarios, int total) {
+int salvarUsuarios(const char* nomeArquivo, Usuario* usuarios) {
     FILE* f = fopen(nomeArquivo, "w");
     if (!f) return 0;
 
-    for (int i = 0; i < total; i++) {
-        fprintf(f, "%s|%s|%s|%d\n", usuarios[i].nome,
-                usuarios[i].login,
-                usuarios[i].senha,
-                usuarios[i].tipo);
+    Usuario* atual = usuarios;
+    while (atual != NULL) {
+        fprintf(f, "%s|%s|%s|%d\n",
+                atual->nome,
+                atual->login,
+                atual->senha,
+                atual->tipo);
+        atual = atual->prox;
     }
 
     fclose(f);
     return 1;
 }
 
-Usuario* carregarUsuarios(const char* nomeArquivo, int* total) {
-    FILE* f = fopen(nomeArquivo, "r");
-    if (!f) {
-        f = fopen(nomeArquivo, "w");
-        if (!f) return NULL;
-        fclose(f);
-        f = fopen(nomeArquivo, "r");
-        if (!f) return NULL;
+void liberarUsuarios(Usuario* usuarios) {
+    Usuario* atual;
+    while (usuarios != NULL) {
+        atual = usuarios;
+        usuarios = usuarios->prox;
+        free(atual);
     }
-
-    int capacidade = BUFFER_INICIAL;
-    Usuario* lista = malloc(sizeof(Usuario) * capacidade);
-    *total = 0;
-
-    while (fscanf(f, "%49[^|]|%12[^|]|%8[^|]|%d\n",
-        lista[*total].nome,
-        lista[*total].login,
-        lista[*total].senha,
-        &lista[*total].tipo) == 4) {
-
-        (*total)++;
-        if (*total >= capacidade) {
-            capacidade *= 2;
-            lista = realloc(lista, sizeof(Usuario) * capacidade);
-        }
-    }
-
-    fclose(f);
-    return lista;
 }

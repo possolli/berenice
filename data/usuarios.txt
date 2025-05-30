@@ -1,3 +1,5 @@
 Admin|admin|admin123|1
 Jose Olavo|possolli|possoli7|2
 Bruno|lindobonito|possoli7|1
+Toni|testetoni|12345678|2
+Luiz|luizinacio|fazol13|1
