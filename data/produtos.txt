@@ -1,2 +1,5 @@
-1|Teste|10|2|Alimento|100.00|200.00
-2|Teste|10|2|Alimento|100.00|200.00
+1|Arroz|50|10|Alimento|25.00|40.00
+2|Banana|30|5|Alimento|2.00|4.00
+3|Detergente|20|10|Limpeza|1.50|3.00
+4|Pao|22|10|Panificação|50.00|60.00
+5|Teste|22|22|Bebidas|22.00|33.00

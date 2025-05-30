@@ -3,7 +3,7 @@
 
 #include "categorias.h"
 
-typedef struct {
+typedef struct Produto {
     int id;
     char descricao[50];
     int estoque;
@@ -11,10 +11,16 @@ typedef struct {
     char categoria[30];
     float preco_compra;
     float preco_venda;
+    struct Produto *prox;
 } Produto;
 
-void cadastrarProduto(Produto** produtos, int* totalProdutos, Categoria* categorias, int totalCategorias);
-void listarProdutos(Produto* produtos, int totalProdutos);
-void salvarProdutos(const char* nomeArquivo, Produto* produtos, int totalProdutos);
+void menuListarProduto(Produto* produtos);
+void cadastrarProduto(Produto** produtos, Categoria* categorias);
+void listarProdutos(Produto* produtos);
+void salvarProdutos(const char* nomeArquivo, Produto* produtos);
+void listarProdutosEstoqueZeroOuMinimo(Produto* produtos);
+void exibirProduto(Produto* p);
+Produto* pegarProduto(Produto* lista, int id);
+void liberarProdutos(Produto* lista);
 
 #endif

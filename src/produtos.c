@@ -1,109 +1,173 @@
-
 #include "../include/produtos.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void cadastrarProduto(Produto** produtos, int* total, Categoria* categorias, int totalCategorias) {
+void cadastrarProduto(Produto** produtos, Categoria* categorias) {
     printf("\n--- Cadastro de Produto ---\n");
 
-    // Realoca espaço para novo produto
-    Produto* novo = realloc(*produtos, sizeof(Produto) * (*total + 1));
+    Produto* novo = malloc(sizeof(Produto));
     if (!novo) {
         printf("Erro ao alocar memória para o produto.\n");
         return;
     }
-    *produtos = novo;
 
-    Produto* p = &(*produtos)[*total];
-
-    // ID sequencial
-    p->id = (*total == 0) ? 1 : (*produtos)[*total - 1].id + 1;
+    novo->id = 1;
+    Produto* atual = *produtos;
+    while (atual && atual->prox) {
+        atual = atual->prox;
+    }
+    if (atual) novo->id = atual->id + 1;
 
     getchar(); // limpa buffer do teclado
 
     printf("Descrição: ");
-    fgets(p->descricao, sizeof(p->descricao), stdin);
-    p->descricao[strcspn(p->descricao, "\n")] = 0;
+    fgets(novo->descricao, sizeof(novo->descricao), stdin);
+    novo->descricao[strcspn(novo->descricao, "\n")] = 0;
 
     printf("Estoque atual: ");
-    scanf("%d", &p->estoque);
+    scanf("%d", &novo->estoque);
 
     printf("Estoque mínimo: ");
-    scanf("%d", &p->estoque_minimo);
+    scanf("%d", &novo->estoque_minimo);
 
-    getchar(); // limpa buffer após scanf
+    getchar();
 
     while (1) {
         int categoriaId;
-        int categoriaEncontrada = 0;
         printf("Categoria (ID): ");
-        for (int i = 0; i < totalCategorias; i++) {
-            printf("%d - %s\n", categorias[i].id, categorias[i].descricao);
-        }
+        listarCategorias(categorias);
         scanf("%d", &categoriaId);
-        for (int i = 0; i < totalCategorias; i++) {
-            if (categorias[i].id == categoriaId) {
-                strcpy(p->categoria, categorias[i].descricao);
-                categoriaEncontrada = 1;
-                break;
-            }
-        }
-        if (categoriaEncontrada) {
-            break;
-        } else {
+        Categoria *categoria = pegarCategoria(categorias, categoriaId);
+        if (!categoria) {
             printf("Categoria não encontrada. Tente novamente.\n");
+            continue;
         }
+        strcpy(novo->categoria, categoria->descricao);
+        break;
     }
 
     printf("Preço de compra: ");
-    scanf("%f", &p->preco_compra);
+    scanf("%f", &novo->preco_compra);
 
     printf("Preço de venda: ");
-    scanf("%f", &p->preco_venda);
+    scanf("%f", &novo->preco_venda);
 
-    (*total)++;
-    printf("Produto cadastrado com sucesso! ID: %d\n", p->id);
+    novo->prox = NULL;
+    if (!*produtos) *produtos = novo;
+    else atual->prox = novo;
+
+    printf("Produto cadastrado com sucesso! ID: %d\n", novo->id);
 }
 
-void listarProdutos(Produto* produtos, int total) {
-    if (total == 0) {
+Produto* pegarProduto(Produto* lista, int id) {
+    while (lista) {
+        if (lista->id == id) return lista;
+        lista = lista->prox;
+    }
+    return NULL;
+}
+
+void listarProdutos(Produto* produtos) {
+    if (!produtos) {
         printf("Nenhum produto cadastrado.\n");
         return;
     }
-
     printf("\n===== Lista de Produtos =====\n");
-    for (int i = 0; i < total; i++) {
-        printf("ID: %d\n", produtos[i].id);
-        printf("Descrição: %s\n", produtos[i].descricao);
-        printf("Estoque: %d\n", produtos[i].estoque);
-        printf("Estoque mínimo: %d\n", produtos[i].estoque_minimo);
-        printf("Categoria: %s\n", produtos[i].categoria);
-        printf("Preço de compra: R$ %.2f\n", produtos[i].preco_compra);
-        printf("Preço de venda: R$ %.2f\n", produtos[i].preco_venda);
-        printf("-----------------------------\n");
+    while (produtos) {
+        exibirProduto(produtos);
+        produtos = produtos->prox;
     }
 }
 
-void salvarProdutos(const char* nomeArquivo, Produto* produtos, int total) {
+void listarProdutosEstoqueZeroOuMinimo(Produto* produtos) {
+    int encontrou = 0;
+    while (produtos) {
+        if (produtos->estoque <= produtos->estoque_minimo) {
+            exibirProduto(produtos);
+            encontrou = 1;
+        }
+        produtos = produtos->prox;
+    }
+    if (!encontrou) {
+        printf("Nenhum produto com estoque zero ou mínimo encontrado.\n");
+    }
+}
+
+void exibirProduto(Produto* p) {
+    printf("ID: %d\n", p->id);
+    printf("Descrição: %s\n", p->descricao);
+    printf("Estoque: %d\n", p->estoque);
+    printf("Estoque mínimo: %d\n", p->estoque_minimo);
+    printf("Categoria: %s\n", p->categoria);
+    printf("Preço de compra: R$ %.2f\n", p->preco_compra);
+    printf("Preço de venda: R$ %.2f\n", p->preco_venda);
+    printf("-----------------------------\n");
+}
+
+void salvarProdutos(const char* nomeArquivo, Produto* produtos) {
     FILE* f = fopen(nomeArquivo, "w");
     if (!f) {
         printf("Erro ao salvar produtos no arquivo '%s'. Verifique se a pasta existe e se há permissão.\n", nomeArquivo);
         return;
     }
 
-    for (int i = 0; i < total; i++) {
+    while (produtos) {
         fprintf(f, "%d|%s|%d|%d|%s|%.2f|%.2f\n",
-                produtos[i].id,
-                produtos[i].descricao,
-                produtos[i].estoque,
-                produtos[i].estoque_minimo,
-                produtos[i].categoria,
-                produtos[i].preco_compra,
-                produtos[i].preco_venda);
+                produtos->id,
+                produtos->descricao,
+                produtos->estoque,
+                produtos->estoque_minimo,
+                produtos->categoria,
+                produtos->preco_compra,
+                produtos->preco_venda);
+        produtos = produtos->prox;
     }
 
     fclose(f);
-    printf("Produtos salvos com sucesso (%d registrados).\n", total);
+    printf("Produtos salvos com sucesso.\n");
 }
 
+void menuListarProduto(Produto* produtos) {
+    if (!produtos) {
+        printf("Nenhum produto cadastrado.\n");
+        return;
+    }
+
+    int opcao;
+    do {
+        printf("\n===== Menu Listar Produtos =====\n");
+        printf("1. Listar todos os produtos\n");
+        printf("2. Listar produtos com estoque zero ou mínimo\n");
+        printf("3. Listar produtos mais vendidos (em um período)\n");
+        printf("4. Voltar ao menu principal\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar();
+
+        switch (opcao) {
+            case 1:
+                listarProdutos(produtos);
+                break;
+            case 2:
+                listarProdutosEstoqueZeroOuMinimo(produtos);
+                break;
+            case 3:
+                printf("Funcionalidade de listar produtos mais vendidos ainda não implementada.\n");
+                break;
+            case 4:
+                printf("Voltando ao menu principal...\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (opcao != 4);
+}
+
+void liberarProdutos(Produto* lista) {
+    while (lista) {
+        Produto* temp = lista;
+        lista = lista->prox;
+        free(temp);
+    }
+}
