@@ -13,11 +13,13 @@ typedef struct Cliente {
 
 extern int maior_id_cliente;
 
+void menuListarClientes(Cliente* lista);
 void cadastrarCliente(Cliente** lista);
 void listarClientes(Cliente* lista);
 void salvarClientes(const char* nomeArquivo, Cliente* lista);
-Cliente* carregarClientes(const char* nomeArquivo);
 void liberarClientes(Cliente* lista);
 Cliente* pegarUltimoCliente(Cliente* lista);
+Cliente* ordenarClientesPorNome(Cliente* lista);
+Cliente* pegarCliente(Cliente* lista, int id);
 
 #endif

@@ -15,6 +15,16 @@ Cliente* pegarUltimoCliente(Cliente* lista) {
     return lista;
 }
 
+Cliente* pegarCliente(Cliente* lista, int id) {
+    while (lista != NULL) {
+        if (lista->id == id) {
+            return lista;
+        }
+        lista = lista->prox;
+    }
+    return NULL;
+}
+
 void cadastrarCliente(Cliente** clientes) {
     printf("\n--- Cadastro de Cliente ---\n");
 
@@ -62,6 +72,46 @@ void cadastrarCliente(Cliente** clientes) {
     printf("Cliente cadastrado com sucesso! ID: %d\n", novo->id);
 }
 
+void menuListarClientes(Cliente* lista) {
+    if (!lista) {
+        printf("Nenhum cliente cadastrado.\n");
+        return;
+    }
+
+    int opcao;
+    do {
+        printf("\n===== Menu Listar Clientes =====\n");
+        printf("1. Listar todos os clientes\n");
+        printf("2. Listar clientes (em ordem alfabética por nome)\n");
+        printf("3. Listar clientes que compraram (em um período)\n");
+        printf("4. Voltar ao menu principal\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar(); // Limpa o buffer
+
+        switch (opcao) {
+            case 1:
+                listarClientes(lista);
+                break;
+            case 2: {
+                // Ordenar clientes por nome
+                Cliente* ordenados = ordenarClientesPorNome(lista);
+                listarClientes(ordenados);
+                liberarClientes(ordenados); // Libera a memória da lista ordenada
+                break;
+            }
+            case 3:
+                printf("Funcionalidade de listar clientes que compraram ainda não implementada.\n");
+                break;
+            case 4:
+                printf("Voltando ao menu principal...\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (opcao != 4);
+}
+
 void listarClientes(Cliente* lista) {
     if (!lista) {
         printf("Nenhum cliente cadastrado.\n");
@@ -81,6 +131,53 @@ void listarClientes(Cliente* lista) {
         atual = atual->prox;
     }
 }
+
+Cliente* ordenarClientesPorNome(Cliente* lista) {
+    if (!lista || !lista->prox) return lista; // Lista vazia ou com apenas um elemento
+
+    // Cria um vetor para armazenar os clientes
+    int count = 0;
+    Cliente* atual = lista;
+    while (atual) {
+        count++;
+        atual = atual->prox;
+    }
+
+    Cliente** vetor = malloc(sizeof(Cliente*) * count);
+    if (!vetor) {
+        printf("Erro ao alocar memória para ordenar clientes.\n");
+        return lista;
+    }
+
+    atual = lista;
+    for (int i = 0; i < count; i++) {
+        vetor[i] = atual;
+        atual = atual->prox;
+    }
+
+    // Ordena o vetor usando bubble sort
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(vetor[j]->nome, vetor[j + 1]->nome) > 0) {
+                Cliente* temp = vetor[j];
+                vetor[j] = vetor[j + 1];
+                vetor[j + 1] = temp;
+            }
+        }
+    }
+
+    // Reconstrói a lista ordenada
+    for (int i = 0; i < count - 1; i++) {
+        vetor[i]->prox = vetor[i + 1];
+    }
+    vetor[count - 1]->prox = NULL;
+
+    Cliente* novaLista = vetor[0];
+    free(vetor);
+
+    return novaLista;
+}
+
 
 void salvarClientes(const char* nomeArquivo, Cliente* lista) {
     FILE* f = fopen(nomeArquivo, "w");
