@@ -3,8 +3,7 @@
 
 #include "../include/usuarios.h"
 
-void menuPrincipal(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp, Categoria* cat, int* totalCategorias,
-                   Venda* v, int* tv, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
+void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda* v, int* tv, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
     int opcao;
     do {
         printf("\n========== MENU PRINCIPAL ==========\n");
@@ -20,10 +19,10 @@ void menuPrincipal(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp
 
         switch (opcao) {
             case 1:
-                menuCadastros(u, tu, c, tc, p, tp, cat, totalCategorias);
+                menuCadastros(u, c, p, cat);
                 break;
             case 2:
-                menuVendas(v, tv, p, tp, c, *tc, i, ti);
+                menuVendas(v, tv, p, c, i, ti);
                 break;
             case 3:
                 menuAberturaCaixa(cx);
@@ -32,18 +31,18 @@ void menuPrincipal(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp
                 menuFechamentoCaixa(cx, pg, *tpg, v->total);
                 break;
             case 5:
-                menuRelatorios(c, *tc, p, *tp, v, *tv, cat, *totalCategorias);
+                menuRelatorios(c, p, v, *tv, cat);
                 break;
-            case 7:
+            case 6:
                 printf("Encerrando o sistema...\n");
                 break;
             default:
                 printf("Opção inválida.\n");
         }
-    } while (opcao != 7);
+    } while (opcao != 6);
 }
 
-void menuCadastros(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp, Categoria* cat, int* totalCategorias) {
+void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria* cat) {
     int opcao;
     do {
         printf("\n========== MENU CADASTROS ==========\n");
@@ -57,16 +56,16 @@ void menuCadastros(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp
 
         switch (opcao) {
             case 1:
-                cadastrarUsuario(&u, tu);
+                cadastrarUsuario(&u);
                 break;
             case 2:
                 cadastrarCliente(&c);
                 break;
             case 3:
-                cadastrarProduto(&p, tp, cat, *totalCategorias);
+                cadastrarProduto(&p, cat);
                 break;
             case 4:
-                cadastrarCategoria(&cat, totalCategorias);
+                cadastrarCategoria(&cat);
                 break;
             case 5:
                 printf("Voltando ao Menu Principal...\n");
@@ -78,7 +77,7 @@ void menuCadastros(Usuario* u, int* tu, Cliente* c, int* tc, Produto* p, int* tp
     } while (opcao != 5);
 }
 
-void menuVendas(Venda* v, int* tv, Produto* p, int* tp, Cliente* c, int totalClientes, ItemVenda* i, int* ti) {
+void menuVendas(Venda* v, int* tv, Produto* p, Cliente* c, ItemVenda* i, int* ti) {
     int opcao;
     do {
         printf("\n========== MENU VENDAS ==========\n");
@@ -91,7 +90,7 @@ void menuVendas(Venda* v, int* tv, Produto* p, int* tp, Cliente* c, int totalCli
 
         switch (opcao) {
             case 1:
-                novaVenda(&v, tv, p, tp, c, totalClientes, i, ti);
+                novaVenda(&v, tv, p, c, i, ti);
                 break;
             case 2:
                 listarVendas(v, *tv);
@@ -120,37 +119,51 @@ void menuFechamentoCaixa(Caixa* caixa, Pagamento* pagamentos, int totalPagamento
     mostrarResumoFechamento(*caixa, totalVendas, pagD, pagC, pagDC);
 }
 
-void menuRelatorios(Cliente* c, int totalClientes, Produto* p, int totalProdutos, Venda* v, int totalVendas, Categoria* cat, int totalCategorias) {
+// 5.RELATÓRIOS
+// 5.1 Listagem dos Clientes
+// 5.1.1 Listagem de Clientes (ordenada em ordem alfabética por nome)
+// 5.1.2 Listagem dos Clientes que Compraram (em um determinado período)
+
+// 5.2 Listagem dos Produtos
+// 5.2.1 Listagem de Produtos (ordenada em ordem alfabética por descrição)
+// 5.2.2 Listagem de Produtos com Estoque zero ou Mínimo(ordenada em ordem alfabética por
+// descrição)
+// 5.2.3 Listagem dos Produtos mais Vendidos (em um determinado período)
+
+// 5.3 Listagem das Vendas
+// 5.3.1 Listagem das Vendas (em um determinado período)
+// 5.3.2 Faturamento Consolidado – em um período
+// Consolidados de valores recebido em dinheiro
+// Consolidados de valores recebido em Cartão
+
+// 5.4 Retornar ao Menu Principal
+void menuRelatorios(Cliente* c, Produto* p, Venda* v, int totalVendas, Categoria* cat) {
     int opcao;
     do {
         printf("\n========== MENU RELATÓRIOS ==========\n");
         printf("1. Listar Clientes\n");
         printf("2. Listar Produtos\n");
         printf("3. Listar Vendas\n");
-        printf("4. Listar Categorias\n");
-        printf("5. Voltar ao Menu Principal\n");
+        printf("4. Voltar ao Menu Principal\n");
         printf("Escolha uma opção: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
             case 1:
-                listarClientes(c);
+                menuListarClientes(c);
                 break;
             case 2:
-                listarProdutos(p, totalProdutos);
+                menuListarProduto(p);
                 break;
             case 3:
                 listarVendas(v, totalVendas);
                 break;
             case 4:
-                listarCategorias(cat, totalCategorias);
-                break;
-            case 5:
                 printf("Voltando ao Menu Principal...\n");
                 break;
             default:
                 printf("Opção inválida.\n");
         }
 
-    } while (opcao != 5);
+    } while (opcao != 4);
 }

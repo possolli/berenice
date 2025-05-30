@@ -23,14 +23,13 @@
 int e_admin = 0; // Variável global para verificar se o usuário é administrador
 
 int main() {
-    int totalUsuarios = 0;
-    Usuario* ptr_usuarios = carregarUsuarios("data/usuarios.txt", &totalUsuarios);
+    Usuario* ptr_usuarios = carregarUsuarios("data/usuarios.txt");
     if (ptr_usuarios == NULL) {
         printf("Erro ao carregar usuários.\n");
         return 1;
     }
 
-    Usuario* usuario_logado = login(ptr_usuarios, totalUsuarios);
+    Usuario* usuario_logado = login(ptr_usuarios);
     if (usuario_logado == NULL) {
         free(ptr_usuarios);
         return 1;
@@ -49,17 +48,15 @@ int main() {
     // Agora pode acessar o usuário logado por ponteiro
     printf("Bem-vindo(a), %s!\n", usuario_logado->nome);
 
-    int totalClientes = 0, totalProdutos = 0, totalCategorias = 0;
     int totalVendas = 0, totalItens = 0;
     int totalPagamentos = 0;
 
     Cliente* ptr_clientes = carregarClientes("data/clientes.txt");
-    Produto* ptr_produtos = carregarProdutos("data/produtos.txt", &totalProdutos);
-    Categoria* ptr_categorias = carregarCategorias("data/categorias.txt", &totalCategorias);
+    Produto* ptr_produtos = carregarProdutos("data/produtos.txt");
+    Categoria* ptr_categorias = carregarCategorias("data/categorias.txt");
     Venda* ptr_vendas = carregarVendas("data/vendas.txt", &totalVendas);
     ItemVenda* ptr_itens = carregarItensVenda("data/itens_venda.txt", &totalItens);
     Pagamento* ptr_pagamentos = carregarPagamentos("data/pagamentos.txt", &totalPagamentos);
-
     Caixa caixa = {0.0, 0.0, 0}; // Caixa inicialmente fechado
 
     if (ptr_usuarios == NULL || ptr_clientes == NULL || ptr_produtos == NULL || ptr_categorias == NULL ||
@@ -68,15 +65,15 @@ int main() {
         return 1;
     }
 
-    menuPrincipal(ptr_usuarios, &totalUsuarios, ptr_clientes, &totalClientes, ptr_produtos, &totalProdutos,
-                    ptr_categorias, &totalCategorias, ptr_vendas, &totalVendas,
+    menuPrincipal(ptr_usuarios, ptr_clientes, ptr_produtos,
+                    ptr_categorias, ptr_vendas, &totalVendas,
                     ptr_itens, &totalItens, ptr_pagamentos, &totalPagamentos, &caixa);
 
     if (confirmar("Deseja guardar as informações de Clientes, Produtos, Vendas e Pagamentos (s/n)? ")) {
-        salvarUsuarios("data/usuarios.txt", ptr_usuarios, totalUsuarios);
+        salvarUsuarios("data/usuarios.txt", ptr_usuarios);
         salvarClientes("data/clientes.txt", ptr_clientes);
-        salvarProdutos("data/produtos.txt", ptr_produtos, totalProdutos);
-        salvarCategorias("data/categorias.txt", ptr_categorias, totalCategorias);
+        salvarProdutos("data/produtos.txt", ptr_produtos);
+        salvarCategorias("data/categorias.txt", ptr_categorias);
         salvarVendas("data/vendas.txt", ptr_vendas, totalVendas);
         salvarItensVenda("data/itens_venda.txt", ptr_itens, totalItens);
         salvarPagamentos("data/pagamentos.txt", ptr_pagamentos, totalPagamentos);
@@ -84,13 +81,12 @@ int main() {
     }
 
     liberarClientes(ptr_clientes);
-    free(ptr_produtos);
+    liberarProdutos(ptr_produtos);
+    liberarCategorias(ptr_categorias);
+    liberarUsuarios(ptr_usuarios);
     free(ptr_vendas);
     free(ptr_itens);
     free(ptr_pagamentos);
-    free(ptr_categorias);
-    free(ptr_usuarios);
     free(usuario_logado);
-
     return 0;
 }

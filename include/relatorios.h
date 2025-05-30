@@ -8,7 +8,7 @@
 
 void listarUsuarios(Usuario* usuarios, int totalUsuarios);
 void listarClientes(Cliente* clientes, int totalClientes);
-void listarProdutos(Produto* produtos, int totalProdutos);
+void listarProdutos(Produto* produtos);
 void listarVendas(Venda* vendas, int totalVendas);
 
 #endif
