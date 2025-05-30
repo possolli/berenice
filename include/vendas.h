@@ -13,11 +13,12 @@ typedef struct {
     float desconto;
     char tipo_pagamento[20];
     char status[20];
+    ItemVenda itens;
 } Venda;
 
 void novaVenda(Venda** vendas, int* totalVendas,
-               Produto* produtos, int* totalProdutos,
-               Cliente* clientes, int totalClientes,
+               Produto* produtos,
+               Cliente* clientes,
                ItemVenda* itens, int* totalItens);
 
 void listarVendas(Venda* vendas, int totalVendas);
