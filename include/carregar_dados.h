@@ -15,7 +15,7 @@ Usuario* carregarUsuarios(const char* nomeArquivo);
 Cliente* carregarClientes(const char* nomeArquivo);
 Produto* carregarProdutos(const char* nomeArquivo);
 Categoria* carregarCategorias(const char* nomeArquivo);
-Venda* carregarVendas(const char* nomeArquivo, int* total);
+Venda* carregarVendas(const char* nomeArquivo);
 ItemVenda* carregarItensVenda(const char* nomeArquivo, int* total);
 Pagamento* carregarPagamentos(const char* nomeArquivo, int* total);
 

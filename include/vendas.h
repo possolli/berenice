@@ -3,9 +3,9 @@
 
 #include "clientes.h"
 #include "produtos.h"
-#include "itens_venda.h"  // <- ESSENCIAL
+#include "itens_venda.h"
 
-typedef struct {
+typedef struct Venda {
     int id;
     int cliente_id;
     int quantidade;
@@ -13,15 +13,18 @@ typedef struct {
     float desconto;
     char tipo_pagamento[20];
     char status[20];
-    ItemVenda itens;
+    char data[11]; // Formato "YYYY-MM-DD"
+    ItemVenda* itens;
+    struct Venda* prox; // Ponteiro para o próximo venda na lista
 } Venda;
 
-void novaVenda(Venda** vendas, int* totalVendas,
+void novaVenda(Venda** vendas,
                Produto* produtos,
-               Cliente* clientes,
-               ItemVenda* itens, int* totalItens);
+               Cliente* clientes);
 
-void listarVendas(Venda* vendas, int totalVendas);
-void salvarVendas(const char* nomeArquivo, Venda* vendas, int totalVendas);
+void listarVendas(Venda* vendas);
+void salvarVendas(const char* nomeArquivo, Venda* vendas);
+void liberarVendas(Venda* vendas);
+void menuListarVendas(Venda* vendas);
 
 #endif

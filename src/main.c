@@ -12,6 +12,7 @@
 #include "../include/vendas.h"
 #include "../include/pagamento.h"
 #include "../include/caixa.h"
+#include "../include/relatorios.h"
 
 // Utilitários e persistência
 #include "../include/utils.h"
@@ -48,25 +49,19 @@ int main() {
     // Agora pode acessar o usuário logado por ponteiro
     printf("Bem-vindo(a), %s!\n", usuario_logado->nome);
 
-    int totalVendas = 0, totalItens = 0;
+    int totalItens = 0;
     int totalPagamentos = 0;
 
     Cliente* ptr_clientes = carregarClientes("data/clientes.txt");
     Produto* ptr_produtos = carregarProdutos("data/produtos.txt");
     Categoria* ptr_categorias = carregarCategorias("data/categorias.txt");
-    Venda* ptr_vendas = carregarVendas("data/vendas.txt", &totalVendas);
+    Venda* ptr_vendas = carregarVendas("data/vendas.txt");
     ItemVenda* ptr_itens = carregarItensVenda("data/itens_venda.txt", &totalItens);
     Pagamento* ptr_pagamentos = carregarPagamentos("data/pagamentos.txt", &totalPagamentos);
     Caixa caixa = {0.0, 0.0, 0}; // Caixa inicialmente fechado
 
-    if (ptr_usuarios == NULL || ptr_clientes == NULL || ptr_produtos == NULL || ptr_categorias == NULL ||
-        ptr_vendas == NULL || ptr_itens == NULL || ptr_pagamentos == NULL) {
-        printf("Erro ao alocar ou abrir algum dos arquivos de dados.\n");
-        return 1;
-    }
-
     menuPrincipal(ptr_usuarios, ptr_clientes, ptr_produtos,
-                    ptr_categorias, ptr_vendas, &totalVendas,
+                    ptr_categorias, &ptr_vendas,
                     ptr_itens, &totalItens, ptr_pagamentos, &totalPagamentos, &caixa);
 
     if (confirmar("Deseja guardar as informações de Clientes, Produtos, Vendas e Pagamentos (s/n)? ")) {
@@ -74,8 +69,7 @@ int main() {
         salvarClientes("data/clientes.txt", ptr_clientes);
         salvarProdutos("data/produtos.txt", ptr_produtos);
         salvarCategorias("data/categorias.txt", ptr_categorias);
-        salvarVendas("data/vendas.txt", ptr_vendas, totalVendas);
-        salvarItensVenda("data/itens_venda.txt", ptr_itens, totalItens);
+        salvarVendas("data/vendas.txt", ptr_vendas);
         salvarPagamentos("data/pagamentos.txt", ptr_pagamentos, totalPagamentos);
         printf("Dados salvos com sucesso!\n");
     }
@@ -84,7 +78,7 @@ int main() {
     liberarProdutos(ptr_produtos);
     liberarCategorias(ptr_categorias);
     liberarUsuarios(ptr_usuarios);
-    free(ptr_vendas);
+    liberarVendas(ptr_vendas);
     free(ptr_itens);
     free(ptr_pagamentos);
     free(usuario_logado);

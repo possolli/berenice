@@ -1,9 +1,8 @@
 #include "../include/menus.h"
+
 #include <stdio.h>
 
-#include "../include/usuarios.h"
-
-void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda* v, int* tv, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
+void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda** v, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
     int opcao;
     do {
         printf("\n========== MENU PRINCIPAL ==========\n");
@@ -12,7 +11,7 @@ void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda* v,
         printf("3. Abertura de Caixa\n");
         printf("4. Fechamento de Caixa\n");
         printf("5. Relatórios\n");
-        printf("7. Sair\n");
+        printf("6. Sair\n");
         printf("Escolha uma opção: ");
 
         scanf("%d", &opcao);
@@ -22,16 +21,16 @@ void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda* v,
                 menuCadastros(u, c, p, cat);
                 break;
             case 2:
-                menuVendas(v, tv, p, c, i, ti);
+                menuVendas(v, p, c, i, ti);
                 break;
             case 3:
                 menuAberturaCaixa(cx);
                 break;
             case 4:
-                menuFechamentoCaixa(cx, pg, *tpg, v->total);
+                menuFechamentoCaixa(cx, pg, *tpg, (*v)->total);
                 break;
             case 5:
-                menuRelatorios(c, p, v, *tv, cat);
+                menuRelatorios(c, p, *v, cat);
                 break;
             case 6:
                 printf("Encerrando o sistema...\n");
@@ -77,7 +76,7 @@ void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria* cat) {
     } while (opcao != 5);
 }
 
-void menuVendas(Venda* v, int* tv, Produto* p, Cliente* c, ItemVenda* i, int* ti) {
+void menuVendas(Venda** v, Produto* p, Cliente* c, ItemVenda* i, int* ti) {
     int opcao;
     do {
         printf("\n========== MENU VENDAS ==========\n");
@@ -90,19 +89,19 @@ void menuVendas(Venda* v, int* tv, Produto* p, Cliente* c, ItemVenda* i, int* ti
 
         switch (opcao) {
             case 1:
-                novaVenda(&v, tv, p, c, i, ti);
+                novaVenda(v, p, c);
                 break;
             case 2:
-                listarVendas(v, *tv);
+                listarVendas(*v);
                 break;
             case 3:
-                printf("Voltando ao Menu Principal...\n");
+                printf("Pagamento...\n");
                 break;
             default:
                 printf("Opção inválida.\n");
         }
 
-    } while (opcao != 3);
+    } while (opcao != 4);
 }
 
 void menuAberturaCaixa(Caixa* caixa) {
@@ -137,7 +136,8 @@ void menuFechamentoCaixa(Caixa* caixa, Pagamento* pagamentos, int totalPagamento
 // Consolidados de valores recebido em Cartão
 
 // 5.4 Retornar ao Menu Principal
-void menuRelatorios(Cliente* c, Produto* p, Venda* v, int totalVendas, Categoria* cat) {
+
+void menuRelatorios(Cliente* c, Produto* p, Venda* v, Categoria* cat) {
     int opcao;
     do {
         printf("\n========== MENU RELATÓRIOS ==========\n");
@@ -156,7 +156,7 @@ void menuRelatorios(Cliente* c, Produto* p, Venda* v, int totalVendas, Categoria
                 menuListarProduto(p);
                 break;
             case 3:
-                listarVendas(v, totalVendas);
+                menuListarVendas(v);
                 break;
             case 4:
                 printf("Voltando ao Menu Principal...\n");

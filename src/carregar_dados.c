@@ -158,27 +158,38 @@ Categoria* carregarCategorias(const char* nomeArquivo) {
 }
 
 // Carrega vendas
-Venda* carregarVendas(const char* nomeArquivo, int* total) {
+Venda* carregarVendas(const char* nomeArquivo) {
     FILE* f = abrirOuCriarArquivoLeitura(nomeArquivo);
     if (!f) return NULL;
 
-    int capacidade = BUFFER_INICIAL;
-    Venda* lista = malloc(sizeof(Venda) * capacidade);
-    *total = 0;
+    Venda* lista = NULL;
+    Venda* ultimo = NULL;
 
-    while (fscanf(f, "%d|%d|%d|%f|%f|%20[^|]|%20[^\n]\n",
-                  &lista[*total].id,
-                  &lista[*total].cliente_id,
-                  &lista[*total].quantidade,
-                  &lista[*total].total,
-                  &lista[*total].desconto,
-                  lista[*total].tipo_pagamento,
-                  lista[*total].status) == 7) {
-        (*total)++;
-        if (*total >= capacidade) {
-            capacidade *= 2;
-            lista = realloc(lista, sizeof(Venda) * capacidade);
+    Venda temp;
+    while (fscanf(f, "%d|%d|%d|%f|%f|%20[^|]|%20[^|]|%10[^\n]\n",
+                  &temp.id,
+                  &temp.cliente_id,
+                  &temp.quantidade,
+                  &temp.total,
+                  &temp.desconto,
+                  temp.tipo_pagamento,
+                  temp.status,
+                  temp.data) == 8) {
+        Venda* nova = malloc(sizeof(Venda)
+            );
+        if (!nova) break;
+
+        *nova = temp;
+        nova->itens = NULL; // ou carregarItensVenda(nova->id) se for o caso
+        nova->prox = NULL;
+
+        if (lista == NULL) {
+            lista = nova;
+        } else {
+            ultimo->prox = nova;
         }
+
+        ultimo = nova;
     }
 
     fclose(f);

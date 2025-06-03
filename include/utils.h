@@ -3,12 +3,19 @@
 
 #include <stdio.h>
 
-void limparBuffer();
-void pausar();
+typedef struct {
+    char inicio[11]; // Formato "YYYY-MM-DD"
+    char fim[11];   // Formato "YYYY-MM-DD"
+} Periodo;
+
+FILE* abrirOuCriarArquivoLeitura(const char* nomeArquivo);
+
+void solicitarPeriodo(Periodo* periodo);
+int validarData(const char* data);
+
 int confirmar(const char* mensagem);
 
-// ✅ Nova função
-FILE* abrirOuCriarArquivoLeitura(const char* nomeArquivo);
-void* pegarItem(void* lista, int id);
+void limparBuffer();
+void pausar();
 
 #endif
