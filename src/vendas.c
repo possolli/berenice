@@ -1,4 +1,3 @@
-
 #include "../include/vendas.h"
 #include "../include/utils.h"
 #include "../include/relatorios.h"
@@ -360,7 +359,7 @@ void menuListarVendas(Venda* vendas) {
                 break;
             case 2:
                 solicitarPeriodo(&periodo);
-                Venda* resultado = pegarVendasPorPeriodo(vendas, "2025-01-01", "2025-06-03");
+                Venda* resultado = pegarVendasPorPeriodo(vendas, periodo.inicio, periodo.fim);
                 listarVendas(resultado);
                 break;
             case 3:

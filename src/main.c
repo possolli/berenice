@@ -61,7 +61,7 @@ int main() {
     Caixa caixa = {0.0, 0.0, 0}; // Caixa inicialmente fechado
 
     menuPrincipal(ptr_usuarios, ptr_clientes, ptr_produtos,
-                    ptr_categorias, &ptr_vendas,
+                    &ptr_categorias, &ptr_vendas,
                     ptr_itens, &totalItens, ptr_pagamentos, &totalPagamentos, &caixa);
 
     if (confirmar("Deseja guardar as informações de Clientes, Produtos, Vendas e Pagamentos (s/n)? ")) {

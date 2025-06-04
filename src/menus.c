@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda** v, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
+void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria** cat, Venda** v, ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx) {
     int opcao;
     do {
         printf("\n========== MENU PRINCIPAL ==========\n");
@@ -41,7 +41,7 @@ void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda** v
     } while (opcao != 6);
 }
 
-void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria* cat) {
+void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria** cat) {
     int opcao;
     do {
         printf("\n========== MENU CADASTROS ==========\n");
@@ -61,10 +61,10 @@ void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria* cat) {
                 cadastrarCliente(&c);
                 break;
             case 3:
-                cadastrarProduto(&p, cat);
+                cadastrarProduto(&p, *cat);
                 break;
             case 4:
-                cadastrarCategoria(&cat);
+                *cat = cadastrarCategoria(*cat);
                 break;
             case 5:
                 printf("Voltando ao Menu Principal...\n");
@@ -137,7 +137,7 @@ void menuFechamentoCaixa(Caixa* caixa, Pagamento* pagamentos, int totalPagamento
 
 // 5.4 Retornar ao Menu Principal
 
-void menuRelatorios(Cliente* c, Produto* p, Venda* v, Categoria* cat) {
+void menuRelatorios(Cliente* c, Produto* p, Venda* v, Categoria** cat) {
     int opcao;
     do {
         printf("\n========== MENU RELATÓRIOS ==========\n");

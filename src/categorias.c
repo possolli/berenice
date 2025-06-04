@@ -20,17 +20,12 @@ Categoria* pegarCategoria(Categoria* lista, int id) {
     return NULL;
 }
 
-void cadastrarCategoria(Categoria** categorias) {
+Categoria* cadastrarCategoria(Categoria* categorias) {
     Categoria* nova = malloc(sizeof(Categoria));
     if (!nova) {
         printf("Erro ao alocar memória para a nova categoria.\n");
-        return;
+        return categorias; // Retorna a lista original
     }
-
-    nova->prox = NULL;
-
-    Categoria* ultima = pegarUltimaCategoria(*categorias);
-    nova->id = (ultima == NULL) ? 1 : ultima->id + 1;
 
     getchar(); // limpar buffer
 
@@ -38,13 +33,11 @@ void cadastrarCategoria(Categoria** categorias) {
     fgets(nova->descricao, sizeof(nova->descricao), stdin);
     nova->descricao[strcspn(nova->descricao, "\n")] = 0;
 
-    if (*categorias == NULL) {
-        *categorias = nova;
-    } else {
-        ultima->prox = nova;
-    }
+    nova->id = (categorias == NULL) ? 1 : categorias->id + 1;
 
+    nova->prox = categorias; // Inserir no início
     printf("Categoria cadastrada com sucesso! ID: %d\n", nova->id);
+    return nova; // Retorna a nova cabeça da lista
 }
 
 void listarCategorias(Categoria* categorias) {
@@ -73,6 +66,7 @@ void salvarCategorias(const char* nomeArquivo, Categoria* categorias) {
     Categoria* atual = categorias;
     while (atual) {
         fprintf(f, "%d|%s\n", atual->id, atual->descricao);
+        printf("%s\n", atual->descricao);
         atual = atual->prox;
     }
 

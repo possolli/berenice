@@ -11,14 +11,14 @@
 #include "categorias.h"
 
 // Menu principal
-void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria* cat, Venda** v,
+void menuPrincipal(Usuario* u, Cliente* c, Produto* p, Categoria** cat, Venda** v,
                    ItemVenda* i, int* ti, Pagamento* pg, int* tpg, Caixa* cx);
 
 // Submenus
-void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria* cat);
+void menuCadastros(Usuario* u, Cliente* c, Produto* p, Categoria** cat);
 void menuVendas(Venda** v, Produto* p, Cliente* c, ItemVenda* i, int* ti);
 void menuAberturaCaixa(Caixa* caixa);
 void menuFechamentoCaixa(Caixa* caixa, Pagamento* pagamentos, int totalPagamentos, float totalVendas);
-void menuRelatorios(Cliente* c, Produto* p, Venda* v, Categoria* cat);
+void menuRelatorios(Cliente* c, Produto* p, Venda* v, Categoria** cat);
 
 #endif

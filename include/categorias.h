@@ -7,7 +7,7 @@ typedef struct Categoria {
     struct Categoria *prox;
 } Categoria;
 
-void cadastrarCategoria(Categoria** categorias);
+Categoria* cadastrarCategoria(Categoria* categorias);
 void listarCategorias(Categoria* categorias);
 void salvarCategorias(const char* nomeArquivo, Categoria* categorias);
 Categoria* pegarUltimaCategoria(Categoria* lista);
